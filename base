@@ -1,1 +1,165 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Sparkles, Upload } from "lucide-react";
+import { toast } from "sonner";
 
+export function AddJobModal() {
+  const [isRemote, setIsRemote] = useState(false);
+  const [files, setFiles] = useState<FileList | null>(null);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { files } = e.dataTransfer;
+    setFiles(files);
+    toast.success(`Uploaded ${files.length} file(s)`);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission
+    toast.success("Job application saved successfully!");
+  };
+
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Add New Application
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="w-[90vw] sm:max-w-[540px] overflow-y-auto">
+        <SheetHeader className="mb-6">
+          <SheetTitle>Add New Application</SheetTitle>
+        </SheetHeader>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor="jobTitle">Job Title</Label>
+              <Input id="jobTitle" placeholder="Senior Frontend Developer" required />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="company">Company Name</Label>
+              <Input id="company" placeholder="Company Inc." required />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="jobUrl">Job URL</Label>
+              <Input id="jobUrl" type="url" placeholder="https://..." />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="location">Location</Label>
+              <div className="flex items-center gap-4">
+                <Input id="location" placeholder="City, Country" />
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="remote"
+                    checked={isRemote}
+                    onCheckedChange={(checked) => setIsRemote(checked as boolean)}
+                  />
+                  <Label htmlFor="remote" className="text-sm font-normal">
+                    Remote
+                  </Label>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Salary Range</Label>
+              <div className="flex items-center gap-4">
+                <Input
+                  type="number"
+                  placeholder="Min"
+                  className="w-full"
+                  min="0"
+                />
+                <span className="text-muted-foreground">to</span>
+                <Input
+                  type="number"
+                  placeholder="Max"
+                  className="w-full"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="stage">Application Stage</Label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select stage" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="wishlist">Wishlist</SelectItem>
+                  <SelectItem value="applied">Applied</SelectItem>
+                  <SelectItem value="interview">Interview</SelectItem>
+                  <SelectItem value="offer">Offer</SelectItem>
+                  <SelectItem value="rejected">Rejected</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea
+                id="notes"
+                placeholder="Add any additional notes..."
+                className="min-h-[100px]"
+              />
+            </div>
+
+            <div
+              className="border-2 border-dashed rounded-lg p-6 text-center hover:bg-accent/50 transition-colors cursor-pointer"
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+            >
+              <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground mb-1">
+                Drag and drop your files here, or click to select files
+              </p>
+              {files && (
+                <p className="text-sm text-primary">
+                  {files.length} file(s) selected
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-4 justify-end">
+            <Button variant="outline" className="gap-2">
+              <Sparkles className="w-4 h-4" />
+              Generate Cover Letter
+            </Button>
+            <Button type="submit">Save Application</Button>
+          </div>
+        </form>
+      </SheetContent>
+    </Sheet>
+  );
+}
